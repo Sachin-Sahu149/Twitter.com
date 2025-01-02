@@ -2,12 +2,14 @@ import express from 'express';
 import dotenv from 'dotenv'
 import authRoutes from './Routes/auth.routes.js'
 import userRoutes from './Routes/user.routes.js'
+import postRoutes from './Routes/post.routes.js'
 import connectMongoDB from './DB/connectMongoDb.js';
 import validator from 'validator';
 import { v2 as cloudinary } from 'cloudinary';
 import { generatePassword } from '../UtilityFunction/generatePassword.js';
 import cookieParser from 'cookie-parser';
 import { v2 } from 'cloudinary';
+
 dotenv.config();
 cloudinary.config({
     cloud_name: 'dy4qbhh0m',
@@ -23,7 +25,7 @@ app.use(cookieParser());
 
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
-
+app.use('/api/posts',postRoutes);
 
 app.use((err, req, res, next) => {
     console.log("Something went wrong : ", err);
