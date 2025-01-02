@@ -45,13 +45,18 @@ export const signup = async(req,res)=>{
             password:hashedPassword,
             email
         });
-        console.log("newUser :".newUser);
+        console.log("newUser :",newUser);
 
         if(newUser){
             generateTokenAndSetCookie(newUser._id,res);
+            console.log("res in signup controller: ",res.cookie);
             await newUser.save();
-
-            res.status(200).json({...newUser});
+            newUser.password = null;
+            res.status(200).json({success:true,message:'User created successfully',
+                user:{
+                ...newUser._doc
+                }
+            });
         }else{
             res.status(400).json({error:"Invalid user data"});
         }
@@ -61,37 +66,44 @@ export const signup = async(req,res)=>{
         throw error;
     }
 }
+
 export const login = async(req,res)=>{
+
     try {
 
         const{username,password} = req.body;
         
-        if(!username || !password)res.status(400).json({
+        if(!username || !password)res.status(400).json({success:false,
             error:"fill all required details"            
         })
         
         const user = await User.findOne({username});
         console.log(user,"user in login");
-        
-        const isPasswordCorrect = await bcrypt.compare(password,user?.password||"");
-
-        if(!user || !isPasswordCorrect){
-            res.status(400).json({
-                error:"Invalid username or password"
+        if(!user){
+           return res.status(404).json({
+                success:false,
+                message:"This username doesn't exist"
             })
+        }
+        
+        const isPasswordCorrect = await bcrypt.compare(password,user.password);
+
+        if(!isPasswordCorrect){
+            res.status(400).json({success:false,error:"Password is not correct"})
         }
 
         generateTokenAndSetCookie(user._id,res);
 
-        res.status(200).json({
-            _id:user._id,
-            username:user.username,
-          email:user.email,
-          password:user.password,
-          follower:user.followers,
-          following:user.following,
-          coverImage:user.coverImg,
-          profileImg:user.profileImg  
+        res.status(200).json({message:"Logged in successfully",
+        //     _id:user._id,
+        //     username:user.username,
+        //   email:user.email,
+        //   password:user.password,
+        //   follower:user.followers,
+        //   following:user.following,
+        //   coverImage:user.coverImg,
+        //   profileImg:user.profileImg  
+
         })
         
     } catch (error) {
@@ -104,6 +116,7 @@ export const login = async(req,res)=>{
 }
 export const signout = async(req,res)=>{
     try {
+        console.log("user logged out :",req.cookies.jwt,"---------")
         res.cookie("jwt","",{
             maxAge:0,
         })
