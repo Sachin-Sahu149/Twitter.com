@@ -140,6 +140,7 @@ export const likeUnLikePost = async(req,res)=>{
                 to:post.user,
                 type:"like"
             })
+            await newNotification.save();
         }
         return res.status(200).json({message:"Liked post successfully"});
         
