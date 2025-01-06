@@ -69,11 +69,13 @@ export const signup = async(req,res)=>{
 
 export const login = async(req,res)=>{
 
+    const{username,password} = req.body;
+
+    console.log("username:",username,"password:",password);////////
     try {
 
-        const{username,password} = req.body;
         
-        if(!username || !password)res.status(400).json({success:false,
+        if(!username || !password)return res.status(400).json({success:false,
             error:"fill all required details"            
         })
         
@@ -81,15 +83,14 @@ export const login = async(req,res)=>{
         console.log(user,"user in login");
         if(!user){
            return res.status(404).json({
-                success:false,
-                message:"This username doesn't exist"
+                error:"This username doesn't exist"
             })
         }
         
         const isPasswordCorrect = await bcrypt.compare(password,user.password);
 
         if(!isPasswordCorrect){
-            res.status(400).json({success:false,error:"Password is not correct"})
+            return res.status(400).json({error:"Password is not correct"})
         }
 
         generateTokenAndSetCookie(user._id,res);
