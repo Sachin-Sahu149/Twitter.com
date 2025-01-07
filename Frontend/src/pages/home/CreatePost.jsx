@@ -27,7 +27,7 @@ const CreatePost = () => {
 					headers:{
 						'Content-Type':'application/json'
 					},
-					body:JSON.stringify({text,img})
+					body:JSON.stringify({text,image:img})
 				})
 
 				const data = await res.json();
@@ -44,6 +44,8 @@ const CreatePost = () => {
 		},
 		onSuccess:()=>{
 			toast.success('Posted successfully');
+			setText('');
+			setImg('');
 			queryClient.invalidateQueries({queryKey:['posts']});
 		},
 		onError:()=>{
