@@ -1,4 +1,4 @@
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useState } from "react";
 import { MdOutlineMail } from "react-icons/md";
 import { FaUser } from "react-icons/fa";
@@ -7,7 +7,7 @@ import { MdDriveFileRenameOutline } from "react-icons/md";
 import XSvg from "../../../componets/svg/X";
 
 import toast from "react-hot-toast";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const SignUpPage = () => {
 	const [formData, setFormData] = useState({
@@ -16,6 +16,10 @@ const SignUpPage = () => {
 		fullName: "",
 		password: "",
 	});
+
+	// useNavigate hooks fro react router
+
+	const queryClient = useQueryClient();
 
 
     const { mutate, isError, isPending, isSuccess, error, data } = useMutation({
@@ -43,8 +47,11 @@ const SignUpPage = () => {
             }
         },
         onSuccess: () => {
+
             setFormData({...formData,email:"",password:"",username:"",fullName:""})
             toast.success("Account created successfully");
+			queryClient.invalidateQueries({queryKey:['authUser']});
+			
         },
     });
 

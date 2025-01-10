@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 function useFollow() {
     const queryClient = useQueryClient();
 
-    const{mutate:follow,isPending} = useMutation({
+    const{mutate:follow,isPending,data} = useMutation({
         mutationKey:['followUnfollow'],
         mutationFn:async(userID)=>{
             try {
@@ -25,6 +25,7 @@ function useFollow() {
         },
 
         onSuccess:()=>{
+
             Promise.all([
                 queryClient.invalidateQueries({queryKey:['suggestedUser']}),
                 queryClient.invalidateQueries({queryKey:['authUser']}),
@@ -37,7 +38,8 @@ function useFollow() {
         }
     });
 
-    return {follow,isPending};
+
+    return {follow,isPending,data};
 
 }
 

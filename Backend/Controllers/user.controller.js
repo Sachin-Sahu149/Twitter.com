@@ -21,6 +21,7 @@ export const getUserProfile = async(req,res)=>{
     }
 }
 export const followUnfollowUser = async(req,res)=>{
+    console.log("request recieved")
     try {
         const {id} = req.params;
 
@@ -43,7 +44,7 @@ export const followUnfollowUser = async(req,res)=>{
 
         if(isFollowing){
             //unfollow the user
-            await User.findByIdAndUpdate(id,{$pull:{followers:req.user._id}});
+            const updatedUser =  await User.findByIdAndUpdate(id,{$pull:{followers:req.user._id}},{new:true});
             await User.findByIdAndUpdate(req.user._id,{$pull:{following:id}});
             //send notification
 
@@ -55,12 +56,12 @@ export const followUnfollowUser = async(req,res)=>{
 
             // await newNotification.save();
 
-            res.status(200).json({message:"User unfollowed successfully"});
+            res.status(200).json(updatedUser);
 
         }else{
             // follow the user
 
-            await User.findByIdAndUpdate(id,{$push:{followers:req.user._id}});
+            const updatedUser = await User.findByIdAndUpdate(id,{$push:{followers:req.user._id}},{new:true});
             await User.findByIdAndUpdate(req.user._id,{$push:{following:id}});
             //send notification
 
@@ -74,7 +75,7 @@ export const followUnfollowUser = async(req,res)=>{
 
             //todo return the id as a response
 
-            res.status(200).json({message:"User followed successfully"});
+            res.status(200).json(updatedUser);
 
         }
 
@@ -91,7 +92,7 @@ export const getSuggestedUser = async(req,res)=>{
         
         let userFollowedByMe = await User.findById(userID).select("following");
 
-        console.log("Following of current user :",userFollowedByMe);
+        // console.log("Following of current user :",userFollowedByMe);
 
         const users = await User.aggregate([
             {
@@ -105,12 +106,12 @@ export const getSuggestedUser = async(req,res)=>{
                 }
             }
         ])
-        console.log("user :",users);
+        // console.log("user :",users);
         
         let filteredUser = users.filter(user=>{
             return !userFollowedByMe.following.includes(user._id);
         })
-        console.log("filteredUser:",filteredUser.slice(0,1));
+        // console.log("filteredUser:",filteredUser.slice(0,1));
 
         let suggestedUsers = filteredUser.slice(0,8);
 
@@ -191,7 +192,7 @@ export const updateUserProfile = async(req,res)=>{
 
             const uploadResult = await cloudinary.uploader.upload(coverImg);
             console.log("cover image uload result :",uploadResult);
-            coverImg = uploadResult.secure_urll
+            coverImg = uploadResult.secure_url;
             
         }
         //validate email

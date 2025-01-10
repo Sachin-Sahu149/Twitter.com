@@ -18,6 +18,7 @@ const RightPanel = () => {
 				if(!res.ok){
 					throw new Error(data.error || 'Something went wrong');
 				}
+				console.log("%%%% :",data)
 				return data.suggestedUsers;
 			} catch (error) {
 				console.log("Error in rightpanel ",error);
@@ -27,7 +28,8 @@ const RightPanel = () => {
 
 	});
 
-	const {follow,isPending} = useFollow();
+	const {follow,isPending,data:followedUser} = useFollow();
+	console.log("@@@@@@@@@@@@@@ :",followedUser)
 
 	if(suggestedUsers?.length ===0){
 		return <div className="md:w-64 w-0"></div>
@@ -77,7 +79,7 @@ const RightPanel = () => {
 											follow(user._id);
 										}}
 									>
-										{isPending ? <LoadingSpinner size="sm"/>:'Follow'}
+										{ followedUser && (followedUser._id === user._id) ? <LoadingSpinner size="sm"/>:'Follow'}
 									</button>
 								</div>
 							</Link>

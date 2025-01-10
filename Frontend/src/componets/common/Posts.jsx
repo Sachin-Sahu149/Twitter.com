@@ -4,14 +4,14 @@ import { POSTS } from "../../utils/db/dummy";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 
-const Posts = ({feedType}) => {
+const Posts = ({feedType,userName}) => {
 	
 
-	console.log("feedType **:",feedType);
+	console.log("feedType **:",feedType,'1111111111', userName);
 
 	const endPoint = ()=>{
-		if(feedType==='following')return '/api/posts/following';
-		else return '/api/posts/all';
+		if(feedType==='posts')return `/api/posts/user/${userName}`;
+		else return `/api/posts/${feedType}`;
 	}
 
 	console.log("endPoint :",endPoint());
@@ -38,7 +38,7 @@ const Posts = ({feedType}) => {
 
 	useEffect(()=>{
 		refetch();
-	},[feedType,refetch])
+	},[feedType,refetch,userName])
 	
 	return (
 		<>

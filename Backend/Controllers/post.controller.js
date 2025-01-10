@@ -128,11 +128,15 @@ export const likeUnLikePost = async(req,res)=>{
         if(isLike){
             // unlike the post
 
-            await Post.findByIdAndUpdate(postID,{$pull:{likes:userID}});
+           const upadatedPost =  await Post.findByIdAndUpdate(postID,{$pull:{likes:userID}},{new:true});
             await User.findByIdAndUpdate(userID,{$pull:{likedPost:postID}})
 
+            console.log("Unfollow :",upadatedPost);
+
+            return res.status(200).json(upadatedPost.likes)
+
         }else{
-            await Post.findByIdAndUpdate(postID,{$push:{likes:userID}});
+            const upadatedPost = await Post.findByIdAndUpdate(postID,{$push:{likes:userID}},{new:true});
             await User.findByIdAndUpdate(userID,{$push:{likedPost:postID}});
 
             const newNotification = new Notification({
@@ -141,8 +145,11 @@ export const likeUnLikePost = async(req,res)=>{
                 type:"like"
             })
             await newNotification.save();
+
+            console.log("Unfollow :",upadatedPost);
+
+            return res.status(200).json(upadatedPost.likes);
         }
-        return res.status(200).json({message:"Liked post successfully"});
         
     } catch (error) {
         console.log("Error in likeUnlike post controller : ",error.message);
@@ -172,7 +179,7 @@ export const getLikedPost = async(req,res)=>{
     try {
         const userID = req.user._id;
 
-        const user = await User.findById(user);
+        const user = await User.findById(userID);
 
         let likedPost = await Post.find({_id:{$in:user.likedPost}})
         .sort({createdAt:-1})
@@ -220,12 +227,38 @@ export const getUsersPost = async(req,res)=>{
         console.log("user : ",user[0]);
 
         // let allPost = await Post.find({user:user._id})
-        let allPost = await Post.find({user:user[0]._id});
+        let allPost = await Post.find({user:user[0]._id}).populate({path:'user',select:['-password','-email']});
         
         return res.status(200).json(allPost)
         
     } catch (error) {
         console.log("Error in getUsersPost controllers :",error.message);
         return res.status(500).json({error:"Internal server error"});
+    }
+}
+
+// get all user's created post
+
+export const allCreatedPost = async(req,res)=>{
+    
+    try {
+        
+        const userID = req.user._id;
+
+        let user = await User.findById(userID);
+
+        if(!user){
+            return res.status(404).json({error:"User doesn't exist"});
+        }
+
+        let allPost = await Post.find({user:{$eq:userID}})
+        .sort({createdAt:-1})
+        .populate({path:'user',select:'-password'})
+
+        return res.json(allPost);
+
+    } catch (error) {
+        console.log("Error in allCretedPost controllers :",error);
+        return res.status(500).json({error:'Internal server error'});
     }
 }
