@@ -116,9 +116,18 @@ const Post = ({ post }) => {
 				throw error;
 			}
 		},
-		onSuccess: () => {
+		onSuccess: (updatedComments) => {
 			toast.success('Commented successfully');
 			setComment("");
+
+			queryClient.setQueryData(['posts'],(oldPosts)=>{
+
+				return oldPosts.map((p)=>{
+					if(p._id === post._id){
+						return {...p,comments:updatedComments}
+					}else return p;
+				})
+			})
 			
 		},
 		onError: () => {
