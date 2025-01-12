@@ -37,19 +37,19 @@ const Sidebar = () => {
         },
         onSuccess: () => {
             toast.success('Logged out successfully');
-            queryclient.invalidateQueries({queryKey:['authUser']})
+            queryclient.invalidateQueries({ queryKey: ['authUser'] })
         },
-        onError:()=>{
+        onError: () => {
             toast.error('Logout failed');
         }
     })
 
-    const{data:authUser} = useQuery({queryKey:['authUser']});
+    const { data: authUser } = useQuery({ queryKey: ['authUser'] });
 
 
     return (
         <div className='md:flex-[2_2_0] w-18 max-w-52'>
-            <div className='sticky top-0 left-0 h-screen flex flex-col border-r border-gray-700 w-20 md:w-full'>
+            <div className='sticky top-0 left-0 h-screen flex-col border-r border-gray-700 w-20 hidden sm:flex  md:w-full'>
                 <Link to='/' className='flex justify-center md:justify-start'>
                     <XSvg className='px-2 w-12 h-12 rounded-full fill-white hover:bg-stone-900' />
                 </Link>
@@ -109,7 +109,30 @@ const Sidebar = () => {
                     </Link>
                 )}
             </div>
+            {/* bottom  */}
+            <div
+                className="fixed bottom-0 left-0 w-full flex sm:hidden justify-around items-center bg-black  p-2 z-50 shadow-lg"
+            >
+                <Link to="/" className="flex flex-col items-center text-white">
+                    <MdHomeFilled className="w-6 h-6" />
+                    <span className="text-xs">Home</span>
+                </Link>
+                <Link to="/notifications" className="flex flex-col items-center text-white">
+                    <IoNotifications className="w-6 h-6" />
+                    <span className="text-xs">Notifications</span>
+                </Link>
+                <Link to={`/profile/${authUser?.username}`} className="flex flex-col items-center text-white">
+                    <FaUser className="w-6 h-6" />
+                    <span className="text-xs">Profile</span>
+                </Link>
+                <button onClick={logout} className="flex flex-col items-center text-white">
+                    <BiLogOut className="w-6 h-6" />
+                    <span className="text-xs">Logout</span>
+                </button>
+            </div>
+
         </div>
     );
 };
 export default Sidebar;
+
