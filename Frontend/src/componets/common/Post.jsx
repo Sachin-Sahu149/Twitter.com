@@ -10,11 +10,15 @@ import loadingSpinner from './LoadingSpinner';
 import LoadingSpinner from "./LoadingSpinner";
 import { toast } from 'react-hot-toast'
 import { getTimeAgo } from "../../utils/getTime";
+import DOMPurify from "dompurify";
 
 
 const Post = ({ post }) => {
 	const [comment, setComment] = useState("");
 	const postOwner = post.user;
+	// const sanitizedContent = DOMPurify.sanitize(post.text.replace(/\n/g, "<br>"));
+	// const content = post.text.split("\n");
+	// console.log("content in my :: ",content);
 
 	const { data: authUser } = useQuery({ queryKey: ['authUser'] })
 	const queryClient = useQueryClient();
@@ -189,7 +193,16 @@ const Post = ({ post }) => {
 						{isPending && isMyPost && <span className="flex flex-1 justify-end "><LoadingSpinner size="sm" /></span>}
 					</div>
 					<div className='flex flex-col gap-3 overflow-hidden'>
-						<span>{post.text}</span>
+						{/* Text content */}
+
+					{/* <div id="content">
+						{content.map((text,index)=>(
+							<div key={index}>{text}</div>
+						))}
+					</div> */}
+					<div id="content" style={{ whiteSpace: "pre-line" }}>{post.text}</div>
+
+
 						{post.image && (
 							<img
 								src={post.image}

@@ -10,6 +10,11 @@ const CreatePost = () => {
 	const [text, setText] = useState("");
 	const [img, setImg] = useState(null);
 
+	const formattedText = text.replace(/\n/g, "<br>");
+
+	console.log("text content -- :: ",text);
+	console.log("Formatted content -- ** :: ",text);
+
 	const imgRef = useRef(null);
 	console.log("ImgRef **** : ",imgRef)
 
